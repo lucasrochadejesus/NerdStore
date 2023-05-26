@@ -1,4 +1,5 @@
-﻿using NerdStore.Core.DomainObjects;
+﻿using NerdStore.Core;
+using NerdStore.Core.DomainObjects;
 
 namespace NerdStore.Catalog.Domain
 {
@@ -14,7 +15,69 @@ namespace NerdStore.Catalog.Domain
         public string Image { get; private set; }
         public string ModelNumber { get; private set; }
 
+        
         public Guid CategoryId { get; private set; }
-        public Category Category { get; private set; }
+        public Category Category { get; private set; } 
+        public Dimensions Dimensions { get; private set; }
+
+
+        public Product(string name, string description, bool active, DateTime dtCreation, decimal price, Guid categoryId, string image, string modelNumber, Dimensions dimensions)
+        {
+            CategoryId = categoryId;
+            Name = name;
+            Description = description;
+            Active = active;
+            DtCreation = dtCreation;
+            Price = price;
+            Image = image;
+            ModelNumber = modelNumber;
+
+            Dimensions = dimensions;
+
+            Validate();
+         
+        }
+         
+        public void Activate() => Active = true;
+
+        public void Desactivate() => Active = false;
+
+        public void ChangeCategory(Category category)
+        {
+            Category = category;
+            CategoryId = category.Id;
+        }
+
+        public void ChangeDescription(string description)
+        {
+            Description = description;
+        }
+
+        public void DecreaseStock(int quantity)
+        {
+            // module to convert to positive number.
+            if (quantity < 0) quantity *= -1;
+            StockQuantity -= quantity;
+        }
+
+        public void IncreaseStock(int quantity)
+        {
+            StockQuantity += quantity;
+        }
+
+        public bool HasStock(int quantity)
+        {
+            return StockQuantity >= quantity;
+        }
+
+        public void Validate()
+        {
+            AssertionConcern.ValidateEmpty(Name, "Product must have a name");
+            AssertionConcern.ValidateEmpty(Description, "Product must have a description");
+            AssertionConcern.ValidateIfNotEquals(CategoryId, Guid.Empty, "Product must have Category ID");
+
+        }
+
+         
     }
 }
