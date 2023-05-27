@@ -20,7 +20,7 @@ namespace NerdStore.Catalog.Domain
         public Category Category { get; private set; } 
         public Dimensions Dimensions { get; private set; }
 
-
+        protected Product() {}
         public Product(string name, string description, bool active, DateTime dtCreation, decimal price, Guid categoryId, string image, string modelNumber, Dimensions dimensions)
         {
             CategoryId = categoryId;
