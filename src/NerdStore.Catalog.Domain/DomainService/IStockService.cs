@@ -1,4 +1,4 @@
-﻿namespace NerdStore.Catalog.Domain;
+﻿namespace NerdStore.Catalog.Domain.DomainService;
 
 public interface IStockService : IDisposable
 {
