@@ -55,7 +55,8 @@ namespace NerdStore.Catalog.Application.ViewModels
         [Required(ErrorMessage = "Field {0} is mandatory")]
         public decimal Length { get; set; }
 
-     
+        [Required(ErrorMessage = "Field {0} is mandatory")]
+        public int BrandId { get; set; }
 
         public IEnumerable<CategoryViewModel> Categories { get; set; }
     }

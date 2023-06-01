@@ -18,6 +18,7 @@ public class ViewModelToDomainMappingProfile : Profile
                     p.CategoryId,
                     p.Image,
                     p.ModelNumber,
+                    p.BrandId,
                     new Dimensions(p.Height,p.Width,p.Length)));
 
 

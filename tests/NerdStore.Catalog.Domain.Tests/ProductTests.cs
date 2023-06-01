@@ -9,7 +9,7 @@ namespace NerdStore.Catalog.Domain.Tests
         {
             var ex = Assert.Throws<DomainException>(() =>
             {
-                new Product(string.Empty, "Description", false, DateTime.Now, 1,Guid.NewGuid(), "Image", "A",new Dimensions(1,1,1));
+                new Product(string.Empty, "Description", false, DateTime.Now, 1,Guid.NewGuid(), "Image", "A",0,new Dimensions(1,1,1));
             });
 
             Assert.Equal("Product cannot be empty", ex.Message);

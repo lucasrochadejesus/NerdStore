@@ -31,6 +31,9 @@ namespace NerdStore.Catalog.Data.Mappings
                 .IsRequired()
                 .HasColumnType("varchar(50)");
 
+            builder.Property(p => p.BrandId)
+                .IsRequired()
+                .HasColumnType("int");
 
             builder.OwnsOne(p => p.Dimensions, pd =>
             {
