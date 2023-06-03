@@ -1,8 +1,10 @@
-﻿using NerdStore.Catalog.Application.Services;
+﻿using MediatR;
+using NerdStore.Catalog.Application.Services;
 using NerdStore.Catalog.Data;
 using NerdStore.Catalog.Data.Repository;
 using NerdStore.Catalog.Domain;
 using NerdStore.Catalog.Domain.DomainService;
+using NerdStore.Catalog.Domain.Events;
 using NerdStore.Core.Bus;
 
 namespace NerdStore.WebApp.MVC.Setup
@@ -22,7 +24,7 @@ namespace NerdStore.WebApp.MVC.Setup
             services.AddScoped<IStockService, StockService>();
             services.AddScoped<CatalogContext>();
 
-
+            services.AddScoped<INotificationHandler<LowStockProductEvent>, ProductEventHandler>();
         }
     }
 }
