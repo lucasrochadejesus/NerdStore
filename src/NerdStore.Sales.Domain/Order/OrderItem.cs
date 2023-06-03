@@ -2,7 +2,51 @@
 
 namespace NerdStore.Sales.Domain.Order
 {
-    public class OrderItem : Entity, IAggregateRoot
+    public class OrderItem : Entity
     {
+
+        public Guid OrderItemId { get; private set; }
+        public Guid ProductId { get; private set; }
+        public string ProductName { get; private set; }
+        public int Quantity { get; private set; }
+        public decimal UnitPrice { get; private set; }
+
+        //EF Relation
+        public Order Order { get; set; }
+
+        public OrderItem(Guid orderItemId,  string productName, int quantity, decimal unitPrice)
+        {
+            OrderItemId = orderItemId;   
+            ProductName = productName;
+            Quantity = quantity;
+            UnitPrice = unitPrice; 
+        }
+
+        protected OrderItem() { }
+
+        internal void AssociateOrder(Guid orderItemId)
+        {
+            OrderItemId = orderItemId;
+        }
+
+        public decimal Calculate()
+        {
+            return Quantity * UnitPrice;
+        }
+
+        internal void AddUnity(int unity)
+        {
+            Quantity += unity;
+        }
+
+        internal void UpdateUnity(int unity)
+        {
+            Quantity += unity;
+        }
+
+        public override bool IsValid()
+        {
+            return true;
+        }
     }
 }
