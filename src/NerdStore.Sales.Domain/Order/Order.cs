@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using NerdStore.Core;
 using NerdStore.Core.DomainObjects;
 
 namespace NerdStore.Sales.Domain.Order
@@ -48,18 +49,11 @@ namespace NerdStore.Sales.Domain.Order
         {
             return _orderItems.Any(p => p.ProductId == item.ProductId);
         }
-
-
-
-        public void CalculateOrder()
-        {
-            Total = OrderItems.Sum(p => p.Calculate());
-            CalculateTotalDiscount();
-        }
+         
 
         public void AddItem(OrderItem item)
         {
-            if (!item.IsItValid()) return;
+            if (!item.IsValid()) return;
             
             item.AssociateOrder(Id);
 
@@ -73,8 +67,79 @@ namespace NerdStore.Sales.Domain.Order
 
             item.Calculate();
             _orderItems.Add(item);
+            
             CalculateOrder();
 
+        }
+
+        public void RemoveItem(OrderItem item)
+        {
+            if(!item.IsValid()) return;
+
+            var itemExist = OrderItems.FirstOrDefault(i => i.ProductId == item.ProductId);
+
+            if (itemExist == null) throw new DomainException("Item doesn't exists on Order");
+
+            _orderItems.Remove(itemExist);
+
+            CalculateOrder();
+
+        }
+
+        public void UpdateItem(OrderItem item)
+        {
+            if(!item.IsValid()) return;
+
+            var itemExist = _orderItems.FirstOrDefault(i => i.ProductId == item.ProductId);
+
+            if (itemExist == null) throw new DomainException("Item doesn't exists on Order");
+
+            _orderItems.Remove(itemExist);
+            _orderItems.Add(item);
+
+            CalculateOrder();
+
+        }
+
+        public void MakeDraft()
+        {
+            OrderStatus = OrderStatus.Quote;
+        }
+        public void MakeQuote()
+        {
+            OrderStatus = OrderStatus.Started;
+        }
+
+        public void MakePaid()
+        {
+            OrderStatus = OrderStatus.Paid;
+        }
+
+        public void MakeProcessing()
+        {
+            OrderStatus = OrderStatus.Processing;
+        }
+
+        public void MakeShipped()
+        {
+            OrderStatus = OrderStatus.Shipped;
+        }
+
+        public void MakeCancelled()
+        {
+            OrderStatus = OrderStatus.Cancelled;
+        }
+
+        public void UpdateUnity(OrderItem item, int unity)
+        {
+            item.UpdateUnity(unity);
+            UpdateItem(item);
+        }
+
+        public void CalculateOrder()
+        {
+            Total = OrderItems.Sum(p => p.Calculate());
+            CalculateTotalDiscount();
         }
 
         public void CalculateTotalDiscount()
@@ -104,6 +169,26 @@ namespace NerdStore.Sales.Domain.Order
             Total = totalVal < 0 ? 0 : totalVal;
             Discount = discount;
         }
+        
+        public override bool IsValid()
+        {
+            return true;
+        }
 
+        // Factory to manipulate Order (children class)
+        public static class OrderFactory
+        {
+            public static Order NewOrderQuote(Guid customerId)
+            {
+                var order = new Order
+                {
+                    CustomerId = customerId,
+                };
+
+                order.MakeQuote();
+                return order;
+            }
+
+        }
     }
 }
