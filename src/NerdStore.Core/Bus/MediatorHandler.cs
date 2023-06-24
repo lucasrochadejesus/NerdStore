@@ -9,12 +9,12 @@ using NerdStore.Core.Messages;
 
 namespace NerdStore.Core.Bus
 {
-    public class MediatrHandler : IMediatrHandler
+    public class MediatorHandler : IMediatorHandler
     {
 
         private readonly IMediator _mediator;
 
-        public MediatrHandler(IMediator mediator)
+        public MediatorHandler(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -22,6 +22,11 @@ namespace NerdStore.Core.Bus
         public async Task PublishEvent<T>(T evento) where T : Event
         {
             await _mediator.Publish(evento);
+        }
+
+        public async Task<bool> SendCommand<T>(T command) where T : Command
+        {
+            return await _mediator.Send(command);
         }
     }
 }

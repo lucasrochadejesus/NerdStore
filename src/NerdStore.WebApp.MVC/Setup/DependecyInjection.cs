@@ -6,6 +6,10 @@ using NerdStore.Catalog.Domain;
 using NerdStore.Catalog.Domain.DomainService;
 using NerdStore.Catalog.Domain.Events;
 using NerdStore.Core.Bus;
+using NerdStore.Sales.Application.Commands;
+using NerdStore.Sales.Data.Repository;
+using NerdStore.Sales.Domain.Order;
+using IOrderRepository = NerdStore.Sales.Domain.Order.IOrderRepository;
 
 namespace NerdStore.WebApp.MVC.Setup
 {
@@ -16,7 +20,7 @@ namespace NerdStore.WebApp.MVC.Setup
         {
             
             // Domain BUS (Mediator)
-            services.AddScoped<IMediatrHandler, MediatrHandler>();
+            services.AddScoped<IMediatorHandler, MediatorHandler>();
 
             // Catalog
             services.AddScoped<IProductRepository, ProductRepository>();
@@ -25,6 +29,11 @@ namespace NerdStore.WebApp.MVC.Setup
             services.AddScoped<CatalogContext>();
 
             services.AddScoped<INotificationHandler<LowStockProductEvent>, ProductEventHandler>();
+
+            // Sales
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IRequestHandler<AddOrderItemCommand, bool>, OrderCommandHandler>();
+
         }
     }
 }
