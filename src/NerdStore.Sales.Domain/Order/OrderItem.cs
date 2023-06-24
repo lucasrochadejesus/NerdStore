@@ -14,9 +14,9 @@ namespace NerdStore.Sales.Domain.Order
         //EF Relation
         public Order Order { get; set; }
 
-        public OrderItem(Guid orderItemId,  string productName, int quantity, decimal unitPrice)
-        {
-            OrderItemId = orderItemId;   
+        public OrderItem(Guid productId,  string productName, int quantity, decimal unitPrice)
+        { 
+            ProductId = productId;
             ProductName = productName;
             Quantity = quantity;
             UnitPrice = unitPrice; 
