@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
-using NerdStore.Core.Bus;
+using NerdStore.Core.Communication.Mediator;
 using NerdStore.Core.Messages;
 using NerdStore.Sales.Domain.Order;
 

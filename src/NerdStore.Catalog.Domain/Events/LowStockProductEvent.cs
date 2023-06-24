@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NerdStore.Core.DomainObjects;
+using NerdStore.Core.Messages.CommonMessages.DomainEvents;
 
 namespace NerdStore.Catalog.Domain.Events
 {

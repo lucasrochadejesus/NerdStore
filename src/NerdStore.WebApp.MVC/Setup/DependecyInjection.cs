@@ -5,11 +5,11 @@ using NerdStore.Catalog.Data.Repository;
 using NerdStore.Catalog.Domain;
 using NerdStore.Catalog.Domain.DomainService;
 using NerdStore.Catalog.Domain.Events;
-using NerdStore.Core.Bus;
+using NerdStore.Core.Communication.Mediator;
+using NerdStore.Core.Messages.CommonMessages.Notifications;
 using NerdStore.Sales.Application.Commands;
 using NerdStore.Sales.Data.Repository;
 using NerdStore.Sales.Domain.Order;
-using IOrderRepository = NerdStore.Sales.Domain.Order.IOrderRepository;
 
 namespace NerdStore.WebApp.MVC.Setup
 {
@@ -19,8 +19,11 @@ namespace NerdStore.WebApp.MVC.Setup
         public static void RegisterServices(this IServiceCollection services)
         {
             
-            // Domain BUS (Mediator)
+            // Mediator
             services.AddScoped<IMediatorHandler, MediatorHandler>();
+
+            // Notifications
+            services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
 
             // Catalog
             services.AddScoped<IProductRepository, ProductRepository>();

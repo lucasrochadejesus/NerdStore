@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NerdStore.Catalog.Domain.Events;
-using NerdStore.Core.Bus;
+using NerdStore.Core.Communication.Mediator;
 
 namespace NerdStore.Catalog.Domain.DomainService
 {
