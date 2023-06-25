@@ -8,6 +8,7 @@ using NerdStore.Catalog.Application.ViewModels;
 using NerdStore.Catalog.Domain;
 using NerdStore.Catalog.Domain.DomainService;
 using NerdStore.Core;
+using NerdStore.Core.DomainObjects;
 
 namespace NerdStore.Catalog.Application.Services
 {

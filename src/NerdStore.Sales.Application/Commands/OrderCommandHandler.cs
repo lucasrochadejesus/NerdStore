@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using NerdStore.Core.Communication.Mediator;
 using NerdStore.Core.Messages;
+using NerdStore.Core.Messages.CommonMessages.Notifications;
 using NerdStore.Sales.Domain.Order;
 
 namespace NerdStore.Sales.Application.Commands
@@ -63,8 +64,7 @@ namespace NerdStore.Sales.Application.Commands
 
             foreach (var error in message.ValidationResult.Errors)
             {
-                // show event error
-
+                _mediatorHandler.PublishNotification(new DomainNotification(message.MessageType, error.ErrorMessage));
             }
 
             return false;
