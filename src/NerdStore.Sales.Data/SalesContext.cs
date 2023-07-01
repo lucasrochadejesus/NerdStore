@@ -7,8 +7,7 @@ using NerdStore.Sales.Domain.Order;
 namespace NerdStore.Sales.Data
 {
     public class SalesContext : DbContext, IUnitOfWork
-    {
-
+    { 
         private readonly IMediatorHandler _mediatorHandler;
 
         public SalesContext(DbContextOptions<SalesContext> options, IMediatorHandler mediatorHandler) : base(options)
@@ -37,10 +36,11 @@ namespace NerdStore.Sales.Data
                 }
             }
 
-            var sucesso = await base.SaveChangesAsync() > 0;
-           // if (sucesso) await _mediatorHandler.PublishEvent(this);
+           var sucesso = await base.SaveChangesAsync() > 0;
+         
+           if (sucesso) await _mediatorHandler.PublishEvents(this);
 
-            return sucesso;
+           return sucesso;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

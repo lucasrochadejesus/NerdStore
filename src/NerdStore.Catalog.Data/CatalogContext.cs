@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NerdStore.Catalog.Domain;
 using NerdStore.Core.Data;
+using NerdStore.Core.Messages;
 
 namespace NerdStore.Catalog.Data
 {
@@ -27,6 +28,7 @@ namespace NerdStore.Catalog.Data
                              e => e.GetProperties().Where(p => p.ClrType == typeof(string))))
                 property.SetColumnType("varchar(100)");
 
+            modelBuilder.Ignore<Event>();
 
             // Search for all Entities and Mappings using Reflection
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CatalogContext).Assembly);

@@ -3,17 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NerdStore.Core.Messages;
 
 namespace NerdStore.Core.DomainObjects
 {
     public abstract class Entity
     {
         public Guid Id { get; set; }
+         
+        private List<Event> _notifications;
+        public IReadOnlyCollection<Event> Notifications => _notifications?.AsReadOnly();
+
 
         protected Entity()
         {
             Id = Guid.NewGuid();
 
+        }
+
+        public void AddEvent(Event myEvent)
+        {
+            _notifications = _notifications ?? new List<Event>();
+            _notifications.Add(myEvent);
+        }
+
+        public void RemoveEvent(Event eventItem)
+        {
+            _notifications?.Remove(eventItem);
+        }
+
+        public void CleanEvent()
+        {
+            _notifications?.Clear();
         }
 
         public override bool Equals(object? obj)
