@@ -12,7 +12,11 @@ using NerdStore.Sales.Domain.Order;
 
 namespace NerdStore.Sales.Application.Commands
 {
-    public class OrderCommandHandler : IRequestHandler<AddOrderItemCommand, bool>
+    public class OrderCommandHandler : 
+        IRequestHandler<AddOrderItemCommand, bool>,
+        IRequestHandler<UpdateItemOrderCommand, bool>,
+        IRequestHandler<RemoveItemOrderCommand, bool>,
+        IRequestHandler<ApplyCouponOrderCommand, bool>
     {
 
         private readonly IOrderRepository _orderRepository;
@@ -60,6 +64,104 @@ namespace NerdStore.Sales.Application.Commands
             }
 
             order.AddEvent(new OrderItemAddedEvent(order.CustomerId, order.Id,message.ProductId,message.ProductName, message.UnitPrice, message.Quantity));
+            return await _orderRepository.UnitOfWork.Commit();
+
+        }
+
+        public async Task<bool> Handle(UpdateItemOrderCommand message, CancellationToken cancellationToken)
+        {
+            if (!ValidateCommand(message)) return false;
+
+            var order = await _orderRepository.GetOrderQuoteByCustomerId(message.CustomerId);
+            if (order == null)
+            {
+                await _mediatorHandler.PublishNotification(new DomainNotification("order", "Order not founded!"));
+                return false;
+            }
+             
+            var orderItem = await _orderRepository.GetItemByOrder(order.Id, message.ProductId);
+
+            if (!order.OrderItemExists(orderItem))
+            {
+                await _mediatorHandler.PublishNotification(new DomainNotification("order", "Order Item not founded"));
+                return false;
+            }
+
+            order.UpdateUnity(orderItem, message.Quantity);
+
+            _orderRepository.UpdateItem(orderItem);
+            _orderRepository.Update(order);
+
+            order.AddEvent(new OrderUpdatedEvent(order.CustomerId, order.Id, order.Total)); 
+           
+            return await _orderRepository.UnitOfWork.Commit();
+
+        }
+
+        public async Task<bool> Handle(RemoveItemOrderCommand message, CancellationToken cancellationToken)
+        {
+            if (!ValidateCommand(message)) return false;
+
+            var order = await _orderRepository.GetOrderQuoteByCustomerId(message.CustomerId);
+            if (order == null)
+            {
+                await _mediatorHandler.PublishNotification(new DomainNotification("order", "Order not founded!"));
+                return false;
+            }
+
+            var orderItem = await _orderRepository.GetItemByOrder(order.Id, message.ProductId);
+
+            if (orderItem != null && !order.OrderItemExists(orderItem))
+            {
+                await _mediatorHandler.PublishNotification(new DomainNotification("order", "Item not founded!"));
+                return false;
+            }
+
+            order.RemoveItem(orderItem);
+            order.AddEvent(new OrderRemoveEvent(message.CustomerId, order.Id, message.ProductId));
+
+            _orderRepository.RemoveItem(orderItem);
+            _orderRepository.Update(order);
+
+            return await _orderRepository.UnitOfWork.Commit();
+
+        }
+
+        public async Task<bool> Handle(ApplyCouponOrderCommand message, CancellationToken cancellationToken)
+        { 
+            if (!ValidateCommand(message)) return false;
+
+            var order = await _orderRepository.GetOrderQuoteByCustomerId(message.CustomerId);
+
+            if (order == null)
+            {
+                await _mediatorHandler.PublishNotification(new DomainNotification("order", "Order not founded!"));
+                return false;
+            }
+
+            var coupon = await _orderRepository.GetCouponByCode(message.CouponCode);
+            if (coupon == null)
+            {
+                await _mediatorHandler.PublishNotification(new DomainNotification("order", "Coupon code not founded!"));
+                return false;
+            }
+
+            var couponApplicableValidation = order.ApplyCoupon(coupon);
+            if (!couponApplicableValidation.IsValid)
+            {
+                foreach (var error in couponApplicableValidation.Errors)
+                {
+                    await _mediatorHandler.PublishNotification(new DomainNotification(error.ErrorCode, error.ErrorMessage));
+                }
+
+                return false;
+            }
+
+            order.AddEvent(new CouponAppliedOrderEvent(message.CustomerId, order.Id, coupon.Id));
+            order.AddEvent(new OrderUpdatedEvent(order.CustomerId, order.Id, order.Total));
+
+            _orderRepository.Update(order);
+
             return await _orderRepository.UnitOfWork.Commit();
 
         }

@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using FluentValidation.Results;
 using NerdStore.Core;
 using NerdStore.Core.DomainObjects;
 
@@ -38,11 +39,20 @@ namespace NerdStore.Sales.Domain.Order
             _orderItems = new List<OrderItem>();
         }
 
-        public void ApplyCoupon(Coupon coupon)
+        public ValidationResult ApplyCoupon(Coupon coupon)
         {
+
+            var validationResult = coupon.ValidationIfApplicable();
+           
+            if(!validationResult.IsValid) return validationResult;
+
             Coupon = coupon;
             CouponUsed = true;
+            
             CalculateOrder();
+
+            return validationResult;
+
         }
 
         public bool OrderItemExists(OrderItem item)
