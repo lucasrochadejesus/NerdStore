@@ -67,7 +67,7 @@ namespace NerdStore.Sales.Data.Repository
 
         public async Task<OrderItem> GetItemByOrder(Guid orderId, Guid productId)
         {
-            return await _context.OrderItems.FirstOrDefaultAsync(i => i.ProductId == productId && i.Id == orderId);
+            return await _context.OrderItems.FirstOrDefaultAsync(i => i.ProductId == productId && i.OrderItemId == orderId);
         }
 
         public void AddItem(OrderItem orderItem)
