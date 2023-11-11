@@ -99,5 +99,12 @@ namespace NerdStore.WebApp.MVC.Controllers
 
 
         }
+
+        [Route("PurchaseSummary")]
+        public async Task<IActionResult> PurchaseSummary()
+        {
+            return View(await _orderQueries.GetShoppingCartByCustomerId(CustomerId));
+        }
+        
     }
 }
