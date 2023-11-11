@@ -41,7 +41,7 @@ namespace NerdStore.Sales.Domain.Order
 
         internal void UpdateUnity(int unity)
         {
-            Quantity += unity;
+            Quantity = unity;
         }
 
         public override bool IsValid()
