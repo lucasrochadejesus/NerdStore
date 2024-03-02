@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 using NerdStore.Core.Communication.Mediator;
+using NerdStore.Core.DomainObjects.DTO;
+using NerdStore.Core.Extensions;
 using NerdStore.Core.Messages;
 using NerdStore.Core.Messages.CommonMessages.Notifications;
 using NerdStore.Sales.Application.Events;
@@ -16,7 +18,8 @@ namespace NerdStore.Sales.Application.Commands
         IRequestHandler<AddOrderItemCommand, bool>,
         IRequestHandler<UpdateItemOrderCommand, bool>,
         IRequestHandler<RemoveItemOrderCommand, bool>,
-        IRequestHandler<ApplyCouponOrderCommand, bool>
+        IRequestHandler<ApplyCouponOrderCommand, bool>,
+        IRequestHandler<StartOrderCommand, bool>
     {
 
         private readonly IOrderRepository _orderRepository;
@@ -166,6 +169,28 @@ namespace NerdStore.Sales.Application.Commands
 
         }
 
+        public async Task<bool> Handle(StartOrderCommand message, CancellationToken cancellationToken)
+        {
+            if (!ValidateCommand(message)) return false;
+
+            var order = await _orderRepository.GetOrderQuoteByCustomerId(message.CustomerId);
+
+            order.MakeDraft();
+
+            var items = new List<Item>();
+
+            order.OrderItems.ForEach(i => items.Add(new Item { Id = i.ProductId, Quantity = i.Quantity }));
+
+            var listOrderProducts = new ListOrderProducts { OrderId = order.Id, items = items };
+
+            order.AddEvent(new OrderDraftEvent(order.Id, order.CustomerId, order.Total, listOrderProducts, message.CardName, message.CardNumber, message.ExpirationDate, message.CvvCode));
+
+            _orderRepository.Update(order);
+
+            return await _orderRepository.UnitOfWork.Commit();
+
+        }
+
         private bool ValidateCommand(Command message)
         {
             if(message.IsValid()) return true;
@@ -177,5 +202,7 @@ namespace NerdStore.Sales.Application.Commands
 
             return false;
         }
+
+
     }
 }
