@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NerdStore.Core.DomainObjects.DTO;
-using NerdStore.Core.Messages;
+﻿using NerdStore.Core.DomainObjects.DTO;
+using NerdStore.Core.Messages.CommonMessages.IntegrationEvents;
 
-namespace NerdStore.Sales.Application.Events
+namespace NerdStore.Core.Messages.CommonMessages.IntegrationEvents
 {
-    public class OrderDraftEvent : Event
+    public class OrderDraftEvent : IntegrationEvent
     {
 
         public Guid OrderId { get; private set; }
