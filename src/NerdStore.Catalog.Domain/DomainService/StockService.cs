@@ -66,13 +66,13 @@ namespace NerdStore.Catalog.Domain.DomainService
         }
 
         public async Task<bool> IncreaseStock(Guid productId, int quantity)
-        { 
+        {
 
-            var increased = await IncreaseStock(productId, quantity);
+            var increased = await IncreaseItemStock(productId, quantity);
             if (!increased) return false;
 
             return await _productRepository.UnitOfWork.Commit();
-             
+
         }
 
         private async Task<bool> IncreaseItemStock(Guid productId, int quantity)

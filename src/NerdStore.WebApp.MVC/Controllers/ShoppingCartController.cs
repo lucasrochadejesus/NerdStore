@@ -78,7 +78,8 @@ namespace NerdStore.WebApp.MVC.Controllers
             var product = await _productAppService.GetProductById(id);
             if (product == null) return BadRequest();
 
-            var command = new UpdateItemOrderCommand(CustomerId, id, product.Id, quantity);
+            var cart = await _orderQueries.GetShoppingCartByCustomerId(CustomerId);
+            var command = new UpdateItemOrderCommand(CustomerId, cart.OrderId, product.Id, quantity);
             await _mediatorHandler.SendCommand(command);
 
             if (ValidOperation()) return RedirectToAction("Index");
@@ -114,17 +115,17 @@ namespace NerdStore.WebApp.MVC.Controllers
 
             var cart = await _orderQueries.GetShoppingCartByCustomerId(CustomerId);
 
-         
+
             var command = new StartOrderCommand(cart.OrderId, CustomerId, cart.Total, cart.Payment.CardName,
-                                                cart.Payment.CardNumber, cart.Payment.CardName, cart.Payment.ExpirationDate, cart.Payment.CvvCode);
+                                                cart.Payment.CardNumber, cart.Payment.ExpirationDate, cart.Payment.CvvCode, cartViewModel.Payment.ZipCode);
 
 
             await _mediatorHandler.SendCommand(command);
 
             if (ValidOperation()) return RedirectToAction("Index", "Order");
-         
+
             return View("PurchaseSummary", await _orderQueries.GetShoppingCartByCustomerId(CustomerId));
-        
+
         }
     }
 }

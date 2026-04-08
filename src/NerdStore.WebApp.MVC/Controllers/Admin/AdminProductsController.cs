@@ -83,7 +83,7 @@ namespace NerdStore.WebApp.MVC.Controllers.Admin
             }
             else
             {
-                await _productAppService.DecreaseStock(id, amount);
+                await _productAppService.DecreaseStock(id, Math.Abs(amount));
             }
 
             return View("Index", await _productAppService.GetAll());

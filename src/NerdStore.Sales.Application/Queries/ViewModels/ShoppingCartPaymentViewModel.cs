@@ -16,5 +16,7 @@ namespace NerdStore.Sales.Application.Queries.ViewModels
 
         public string CvvCode { get; set; }
 
+        public string ZipCode { get; set; }
+
     }
 }
